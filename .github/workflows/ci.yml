@@ -23,4 +23,8 @@ jobs:
       - run: uv venv && uv pip install -e ".[dev]"
       - run: uv run ruff check .
       - run: uv run pytest -q
+      # validate also checks run-readiness (env each server needs). CI never
+      # runs a series; a placeholder keeps the tasks/pins/fairness checks meaningful.
       - run: uv run lsbench validate
+        env:
+          GEOMCP_EMAIL: ci@example.invalid
