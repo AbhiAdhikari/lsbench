@@ -1,0 +1,22 @@
+.venv/
+__pycache__/
+*.pyc
+.env
+dist/
+build/
+*.egg-info/
+.pytest_cache/
+.ruff_cache/
+.cache/
+.DS_Store
+
+# Signing keys NEVER go in the repo
+*.pem
+*.key
+.provmcp/
+
+# Run output and scratch. Published series live under published/ and are
+# committed deliberately (hash-only ledgers, reviewed).
+results/
+provenance.jsonl
+.lsbench-tools.jsonl

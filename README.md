@@ -84,7 +84,7 @@ Two things the scorer refuses to hide:
 
 ## Every run is provenance-recorded
 
-The harness reaches every server through [provmcp](../provmcp), in-process. Every
+The harness reaches every server through [provmcp](https://github.com/AbhiAdhikari/provmcp), in-process. Every
 tool call in a benchmark run lands in a hash-chained, signable ledger with the
 upstream data release at the time (`GEO gds Build260919-1942.1`, `OT 26.06`). A
 published score ships with `provenance.jsonl`; a reviewer can run
@@ -147,7 +147,7 @@ report series.
 ## Usage
 
 ```bash
-uv venv && uv pip install -e ".[dev]"      # installs ../provmcp editable
+uv venv && uv pip install -e ".[dev]"      # pulls provmcp from PyPI
 export ANTHROPIC_API_KEY=...               # or `ant auth login`
 export GEOMCP_EMAIL=you@example.org        # NCBI E-utilities contact, for geo-mcp
 

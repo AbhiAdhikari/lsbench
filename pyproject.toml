@@ -7,6 +7,16 @@ requires-python = ">=3.11"
 license = { text = "MIT" }
 authors = [{ name = "Abhinav Adhikari" }]
 keywords = ["mcp", "benchmark", "evaluation", "life-sciences", "bioinformatics"]
+classifiers = [
+  "Development Status :: 3 - Alpha",
+  "Intended Audience :: Science/Research",
+  "License :: OSI Approved :: MIT License",
+  "Programming Language :: Python :: 3",
+  "Programming Language :: Python :: 3.11",
+  "Programming Language :: Python :: 3.12",
+  "Programming Language :: Python :: 3.13",
+  "Topic :: Scientific/Engineering :: Bio-Informatics",
+]
 
 dependencies = [
   "mcp>=2.2.0",
@@ -14,8 +24,14 @@ dependencies = [
   "pydantic>=2.7",
   "pyyaml>=6",
   "httpx>=0.27",
-  "provmcp",            # every benchmark call is recorded; see [tool.uv.sources]
+  "provmcp>=0.1.0",     # every benchmark call is recorded through the proxy
 ]
+
+[project.urls]
+Homepage = "https://github.com/AbhiAdhikari/lsbench"
+Repository = "https://github.com/AbhiAdhikari/lsbench"
+Issues = "https://github.com/AbhiAdhikari/lsbench/issues"
+Results = "https://github.com/AbhiAdhikari/lsbench/blob/main/docs/results-2026-09-20.md"
 
 [project.optional-dependencies]
 dev = ["pytest>=8", "pytest-asyncio>=0.23", "ruff>=0.5"]
@@ -29,9 +45,6 @@ build-backend = "hatchling.build"
 
 [tool.hatch.build.targets.wheel]
 packages = ["src/lsbench"]
-
-[tool.uv.sources]
-provmcp = { path = "../provmcp", editable = true }
 
 [tool.pytest.ini_options]
 asyncio_mode = "auto"
