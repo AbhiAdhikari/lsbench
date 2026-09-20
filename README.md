@@ -6,8 +6,8 @@ varies.
 > Status: **first series published** — three servers × 25 tasks × 3 repeats
 > on Claude Sonnet 5, 2026-09-20, $11 including one superseded run. Results and the full argument are in
 > [docs/results-2026-09-20.md](docs/results-2026-09-20.md); artifacts in
-> [`published/`](published/). Provisional until maintainers have been notified
-> ([drafts](docs/issues/)). The headline: **routing saturated on every
+> [`published/`](published/). Maintainers were notified before publication
+> ([issues](docs/issues/README.md)). The headline: **routing saturated on every
 > server** — the original thesis is not supported at this tier — and the
 > servers separate on error handling and response size instead.
 
@@ -29,7 +29,7 @@ designed server from a generated wrapper.
 
 | Server | Design | Domain |
 |---|---|---|
-| [Open Targets Platform MCP](https://github.com/opentargets/open-targets-platform-mcp) `2026.7.1` (official, built with Anthropic) | **5 tools.** Schema discovery → type dependencies → GraphQL. The model composes queries. | target–disease |
+| [Open Targets Platform MCP](https://github.com/opentargets/platform-mcp) `2026.7.1` (official, built with Anthropic) | **5 tools.** Schema discovery → type dependencies → GraphQL. The model composes queries. | target–disease |
 | [nickzren/opentargets-mcp](https://github.com/nickzren/opentargets-mcp) `0.5.0` | **68 tools**, one per Platform endpoint. Same upstream API. | target–disease |
 | [MCPmed/GEOmcp](https://github.com/MCPmed/GEOmcp) `0.1.2` | **6 search tools**, one per GEO database, mirroring E-utilities. No lookup-by-accession. | gene expression |
 

@@ -22,7 +22,8 @@ servers:
     repo: https://github.com/MCPmed/GEOmcp
     version_tested: "0.1.2"
     date_tested: "2026-09-20"
-    maintainer_notified: false
+    maintainer_notified: true
+    maintainer_response: "filed 2026-09-20: https://github.com/MCPmed/GEOmcp/issues/4 — no response yet"
     source: geo
     roles:
       series_lookup: [search_geo_series, search_geo]      # no by-accession tool; accession search is the closest
@@ -50,10 +51,11 @@ servers:
     name: Open Targets Platform MCP (official)
     domain: target-disease
     command: ["uvx", "--python", "3.12", "--from", "git+https://github.com/opentargets/open-targets-platform-mcp@2026.7.1", "otp-mcp", "--transport", "stdio"]
-    repo: https://github.com/opentargets/open-targets-platform-mcp
+    repo: https://github.com/opentargets/platform-mcp   # renamed from open-targets-platform-mcp; the pinned git URL still redirects
     version_tested: "2026.7.1 (742f7ef)"
     date_tested: "2026-09-20"
-    maintainer_notified: false
+    maintainer_notified: true
+    maintainer_response: "filed 2026-09-20: https://github.com/opentargets/platform-mcp/issues/53 — no response yet"
     source: opentargets
     roles:
       target_lookup: [search_entities, query_open_targets_graphql, get_open_targets_graphql_schema]
@@ -72,7 +74,8 @@ servers:
     repo: https://github.com/nickzren/opentargets-mcp
     version_tested: "0.5.0"
     date_tested: "2026-09-20"
-    maintainer_notified: false
+    maintainer_notified: true
+    maintainer_response: "filed 2026-09-20: https://github.com/nickzren/opentargets-mcp/issues/4 — no response yet"
     source: opentargets
     roles:
       target_lookup: [search_entities, map_ids, get_target_info]
