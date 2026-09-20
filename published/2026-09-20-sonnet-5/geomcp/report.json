@@ -1,0 +1,215 @@
+{
+  "lsbench_version": "0.1.0",
+  "generated_at": "2026-09-20T19:48:58.955499+00:00",
+  "config": {
+    "model": "claude-sonnet-5",
+    "effort": "high",
+    "max_tokens": 4096,
+    "max_turns": 12,
+    "tool_result_max_chars": 40000,
+    "repeats": 3,
+    "max_usd": 2.6,
+    "system_prompt": "You are a research assistant with access to life-sciences data tools.\nAnswer the user's question using the tools. When you have the answer, state it\nplainly in one short paragraph. Include specific identifiers (accessions, gene\nsymbols, IDs) and numbers you found. If a tool reports that something does not\nexist or returns an error, say so \u2014 do not guess or invent records. If a tool\nresult was cut short or paginated, say that too.",
+    "tool_sep": "__",
+    "extras": {}
+  },
+  "server": {
+    "id": "geomcp",
+    "name": "MCPmed/GEOmcp",
+    "domain": "gene-expression",
+    "command": [
+      "uvx",
+      "--python",
+      "3.12",
+      "--with",
+      "mcp<2",
+      "geo-mcp==0.1.2",
+      "--max-file-size-mb",
+      "500",
+      "--max-total-downloads-mb",
+      "1000"
+    ],
+    "url": null,
+    "env": {
+      "GEOMCP_EMAIL": "${GEOMCP_EMAIL}"
+    },
+    "repo": "https://github.com/MCPmed/GEOmcp",
+    "version_tested": "0.1.2",
+    "date_tested": "2026-09-20",
+    "maintainer_notified": false,
+    "maintainer_response": "",
+    "source": "geo",
+    "source_options": {},
+    "roles": {
+      "series_lookup": [
+        "search_geo_series",
+        "search_geo"
+      ],
+      "series_search": [
+        "search_geo_series",
+        "search_geo_datasets",
+        "search_geo"
+      ],
+      "sample_lookup": [
+        "search_geo_samples"
+      ]
+    },
+    "notes": "Thin wrapper; one tool per GEO database. Crashes on the 2.x Python SDK ('Server' object has no attribute 'list_tools'), hence the mcp<2 pin; speaks the 2025-11-25 handshake. Without GEOMCP_EMAIL every search returns {\"esummaryresult\": [\"Empty id list - nothing todo\"]} as a success \u2014 the configuration error is swallowed (geo_profiles.py catches the exception and returns the empty shape). The benchmark sets the email so that this is not what gets scored; it is still a finding. download_geo_data refuses to run unless free disk >= 2 x max_file_size_mb (10 GB at the 5000 MB default) and reports \"insufficient disk space to continue\". The 2026-09-20 series ran on a machine with 4.7 GB free, so every download attempt in it failed for environmental reasons \u2014 see docs/results-2026-09-20.md. --max-file-size-mb 500 (a documented server option) was added after that series; the next series will carry it. No lookup-by-accession tool exists, so series_lookup maps to the series search called with an accession term. Expect low routing scores if the thesis is right. If it scores well, the thesis is wrong \u2014 say so.\n"
+  },
+  "distractors": [
+    {
+      "id": "clinicaltrials",
+      "name": "agents100x/clinicaltrials-mcp",
+      "domain": "clinical-trials",
+      "command": [
+        "uvx",
+        "--python",
+        "3.12",
+        "--with",
+        "mcp<2",
+        "clinicaltrials-mcp==0.1.1"
+      ],
+      "url": null,
+      "env": {},
+      "repo": "https://github.com/agents100x/clinicaltrials-mcp",
+      "version_tested": "0.1.1",
+      "date_tested": "2026-09-20",
+      "maintainer_notified": false,
+      "maintainer_response": "",
+      "source": "clinicaltrials",
+      "source_options": {},
+      "roles": {},
+      "notes": "5 tools. Needs the 1.x SDK pin."
+    },
+    {
+      "id": "pubmed",
+      "name": "pubmedmcp",
+      "domain": "literature",
+      "command": [
+        "uvx",
+        "--python",
+        "3.12",
+        "--with",
+        "mcp<2",
+        "pubmedmcp==0.1.4"
+      ],
+      "url": null,
+      "env": {},
+      "repo": "",
+      "version_tested": "0.1.4",
+      "date_tested": "2026-09-20",
+      "maintainer_notified": false,
+      "maintainer_response": "",
+      "source": "eutils",
+      "source_options": {
+        "db": "pubmed"
+      },
+      "roles": {},
+      "notes": "1 tool (search_abstracts). Needs the 1.x SDK pin."
+    }
+  ],
+  "fairness_problems": [],
+  "scoring_rules": {
+    "source": "/Users/abhinavadhikari/Documents/applied-bio-ai/lsbench/tasks/_scoring.yaml",
+    "sha256": "34f7ad6c2d738f4459d1d8039927d303a06fa22acb71d98c283540d61c435bff"
+  },
+  "tasks": [
+    "geo-correct-001",
+    "geo-correct-002",
+    "geo-correct-003",
+    "geo-correct-004",
+    "geo-route-001",
+    "geo-route-002",
+    "geo-route-003",
+    "geo-route-004",
+    "geo-route-005",
+    "geo-budget-001",
+    "geo-budget-002",
+    "geo-recover-001",
+    "geo-recover-002"
+  ],
+  "fuzzy_fraction": 0.0,
+  "dimensions": {
+    "correctness": {
+      "mean": 0.7916666666666666,
+      "mean_strict": 0.625,
+      "unstable_tasks": [
+        "geo-correct-003"
+      ],
+      "n": 12,
+      "unexercised": 0,
+      "hallucination_rate": 0.16666666666666666,
+      "median_latency_s": 14.580534917011391,
+      "mean_total_tokens": 47906.583333333336,
+      "fuzzy_skipped": 0,
+      "cut_off": 0,
+      "failures": 0
+    },
+    "routing": {
+      "mean": 1.0,
+      "mean_strict": 1.0,
+      "unstable_tasks": [],
+      "n": 15,
+      "unexercised": 0,
+      "hallucination_rate": 0.0,
+      "median_latency_s": 12.559712707996368,
+      "mean_total_tokens": 25856,
+      "fuzzy_skipped": 0,
+      "cut_off": 0,
+      "failures": 0
+    },
+    "budget": {
+      "mean": 0.08333333333333333,
+      "mean_strict": 0.0,
+      "unstable_tasks": [
+        "geo-budget-002"
+      ],
+      "n": 6,
+      "unexercised": 0,
+      "hallucination_rate": 0.0,
+      "median_latency_s": 24.666762499546167,
+      "mean_total_tokens": 90832.66666666667,
+      "fuzzy_skipped": 0,
+      "cut_off": 0,
+      "failures": 0
+    },
+    "recovery": {
+      "mean": 1.0,
+      "mean_strict": 1.0,
+      "unstable_tasks": [],
+      "n": 4,
+      "unexercised": 2,
+      "hallucination_rate": 0.0,
+      "median_latency_s": 7.639031062513823,
+      "mean_total_tokens": 21941.666666666668,
+      "fuzzy_skipped": 0,
+      "cut_off": 0,
+      "failures": 0
+    }
+  },
+  "measured": {
+    "n": 39,
+    "rounds_mean": 2.1025641025641026,
+    "rounds_max": 6,
+    "cut_off": 0,
+    "server_calls": 83,
+    "server_error_rate": 0.25301204819277107,
+    "latency_p50_s": 10.572478833026253,
+    "latency_p95_s": 51.06307366699912,
+    "tokens_mean": 42035,
+    "tokens_max": 180885,
+    "response_tokens_max": 18457,
+    "input_tokens": 242,
+    "cache_write": 505222,
+    "cache_read": 1085280,
+    "output_tokens": 48621,
+    "estimated_usd": 1.966805,
+    "estimated_usd_per_task": 0.05043089743589743
+  },
+  "unstable": [
+    "geo-correct-003 (0.00-1.00 across 3 runs)",
+    "geo-budget-002 (0.00-0.50 across 3 runs)"
+  ],
+  "budget_exhausted": false,
+  "provenance": "results/geomcp/20260920T193632Z/provenance.jsonl"
+}

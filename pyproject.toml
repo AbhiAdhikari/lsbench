@@ -1,0 +1,47 @@
+[project]
+name = "lsbench"
+version = "0.1.0"
+description = "A benchmark for life-sciences MCP servers. Model held fixed, server varied."
+readme = "README.md"
+requires-python = ">=3.11"
+license = { text = "MIT" }
+authors = [{ name = "Abhinav Adhikari" }]
+keywords = ["mcp", "benchmark", "evaluation", "life-sciences", "bioinformatics"]
+
+dependencies = [
+  "mcp>=2.2.0",
+  "anthropic>=1.7",
+  "pydantic>=2.7",
+  "pyyaml>=6",
+  "httpx>=0.27",
+  "provmcp",            # every benchmark call is recorded; see [tool.uv.sources]
+]
+
+[project.optional-dependencies]
+dev = ["pytest>=8", "pytest-asyncio>=0.23", "ruff>=0.5"]
+
+[project.scripts]
+lsbench = "lsbench.__main__:main"
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/lsbench"]
+
+[tool.uv.sources]
+provmcp = { path = "../provmcp", editable = true }
+
+[tool.pytest.ini_options]
+asyncio_mode = "auto"
+
+[tool.ruff]
+line-length = 100
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "UP", "B", "ASYNC", "RUF"]
+ignore = ["RUF012", "E501"]
+
+[tool.ruff.lint.per-file-ignores]
+"tests/*" = ["ASYNC", "B", "RUF015", "RUF007"]

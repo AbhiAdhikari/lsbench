@@ -1,0 +1,195 @@
+{
+  "lsbench_version": "0.1.0",
+  "generated_at": "2026-09-20T16:06:10.121867+00:00",
+  "config": {
+    "model": "claude-opus-5",
+    "effort": "high",
+    "max_tokens": 4096,
+    "max_turns": 12,
+    "tool_result_max_chars": 40000,
+    "repeats": 1,
+    "system_prompt": "You are a research assistant with access to life-sciences data tools.\nAnswer the user's question using the tools. When you have the answer, state it\nplainly in one short paragraph. Include specific identifiers (accessions, gene\nsymbols, IDs) and numbers you found. If a tool reports that something does not\nexist or returns an error, say so \u2014 do not guess or invent records. If a tool\nresult was cut short or paginated, say that too.",
+    "tool_sep": "__",
+    "extras": {}
+  },
+  "server": {
+    "id": "otp-official",
+    "name": "Open Targets Platform MCP (official)",
+    "domain": "target-disease",
+    "command": [
+      "uvx",
+      "--python",
+      "3.12",
+      "--from",
+      "git+https://github.com/opentargets/open-targets-platform-mcp@2026.7.1",
+      "otp-mcp",
+      "--transport",
+      "stdio"
+    ],
+    "url": null,
+    "env": {},
+    "repo": "https://github.com/opentargets/open-targets-platform-mcp",
+    "version_tested": "2026.7.1 (742f7ef)",
+    "date_tested": "2026-09-20",
+    "maintainer_notified": false,
+    "maintainer_response": "",
+    "source": "opentargets",
+    "source_options": {},
+    "roles": {
+      "target_lookup": [
+        "search_entities",
+        "query_open_targets_graphql",
+        "get_open_targets_graphql_schema"
+      ],
+      "target_drugs": [
+        "search_entities",
+        "query_open_targets_graphql",
+        "get_open_targets_graphql_schema",
+        "get_type_dependencies"
+      ]
+    },
+    "notes": "Official, built with Anthropic. Five tools: schema discovery, type dependencies, entity search, GraphQL query, batch query. The model is expected to fetch a schema subset before writing GraphQL, so any of the discovery tools is an acceptable first call. Positive control for the \"designed vs generated\" thesis.\n"
+  },
+  "distractors": [
+    {
+      "id": "clinicaltrials",
+      "name": "agents100x/clinicaltrials-mcp",
+      "domain": "clinical-trials",
+      "command": [
+        "uvx",
+        "--python",
+        "3.12",
+        "--with",
+        "mcp<2",
+        "clinicaltrials-mcp==0.1.1"
+      ],
+      "url": null,
+      "env": {},
+      "repo": "https://github.com/agents100x/clinicaltrials-mcp",
+      "version_tested": "0.1.1",
+      "date_tested": "2026-09-20",
+      "maintainer_notified": false,
+      "maintainer_response": "",
+      "source": "clinicaltrials",
+      "source_options": {},
+      "roles": {},
+      "notes": "5 tools. Needs the 1.x SDK pin."
+    },
+    {
+      "id": "pubmed",
+      "name": "pubmedmcp",
+      "domain": "literature",
+      "command": [
+        "uvx",
+        "--python",
+        "3.12",
+        "--with",
+        "mcp<2",
+        "pubmedmcp==0.1.4"
+      ],
+      "url": null,
+      "env": {},
+      "repo": "",
+      "version_tested": "0.1.4",
+      "date_tested": "2026-09-20",
+      "maintainer_notified": false,
+      "maintainer_response": "",
+      "source": "eutils",
+      "source_options": {
+        "db": "pubmed"
+      },
+      "roles": {},
+      "notes": "1 tool (search_abstracts). Needs the 1.x SDK pin."
+    }
+  ],
+  "fairness_problems": [],
+  "tasks": [
+    "ot-correct-001",
+    "ot-correct-002",
+    "ot-correct-003",
+    "ot-correct-004",
+    "ot-route-001",
+    "ot-route-002",
+    "ot-route-003",
+    "ot-route-004",
+    "ot-budget-001",
+    "ot-budget-002",
+    "ot-recover-001",
+    "ot-recover-002"
+  ],
+  "fuzzy_fraction": 0.0,
+  "dimensions": {
+    "correctness": {
+      "mean": 1.0,
+      "n": 4,
+      "unexercised": 0,
+      "hallucination_rate": 0.0,
+      "median_latency_s": 9.041236021002987,
+      "mean_total_tokens": 49966.5,
+      "fuzzy_skipped": 0,
+      "cut_off": 0,
+      "failures": 0
+    },
+    "routing": {
+      "mean": 1.0,
+      "n": 4,
+      "unexercised": 0,
+      "hallucination_rate": 0.0,
+      "median_latency_s": 18.204787750029936,
+      "mean_total_tokens": 122068,
+      "fuzzy_skipped": 0,
+      "cut_off": 0,
+      "failures": 0
+    },
+    "budget": {
+      "mean": 0.25,
+      "n": 2,
+      "unexercised": 0,
+      "hallucination_rate": 0.0,
+      "median_latency_s": 24.14756974996999,
+      "mean_total_tokens": 81944.5,
+      "fuzzy_skipped": 0,
+      "cut_off": 0,
+      "failures": 0
+    },
+    "recovery": {
+      "mean": 1.0,
+      "n": 1,
+      "unexercised": 1,
+      "hallucination_rate": 0.0,
+      "median_latency_s": 22.115798312501283,
+      "mean_total_tokens": 145281.5,
+      "fuzzy_skipped": 0,
+      "cut_off": 0,
+      "failures": 0
+    }
+  },
+  "measured": {
+    "n": 12,
+    "rounds_mean": 3.1666666666666665,
+    "rounds_max": 8,
+    "cut_off": 0,
+    "server_calls": 40,
+    "server_error_rate": 0.175,
+    "latency_p50_s": 15.873566020512953,
+    "latency_p95_s": 36.91368145798333,
+    "tokens_mean": 95215.83333333333,
+    "tokens_max": 343078,
+    "response_tokens_max": 19709,
+    "input_tokens": 666356,
+    "cache_write": 9210,
+    "cache_read": 451290,
+    "output_tokens": 15734,
+    "estimated_usd": 4.0083375,
+    "estimated_usd_per_task": 0.33402812499999995
+  },
+  "unstable": [],
+  "provenance": "results/otp-official/20260920T160213Z/provenance.jsonl",
+  "rescored_from": "results/otp-official/20260920T160213Z/report.json",
+  "rescored_at": "2026-09-20T17:13:36.882446+00:00",
+  "scoring_rules": {
+    "source": "/Users/abhinavadhikari/Documents/applied-bio-ai/lsbench/tasks/_scoring.yaml",
+    "sha256": "34f7ad6c2d738f4459d1d8039927d303a06fa22acb71d98c283540d61c435bff"
+  },
+  "run_dir": "results/otp-official/20260920T160213Z"
+}

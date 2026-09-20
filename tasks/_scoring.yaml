@@ -1,0 +1,70 @@
+# Scoring rules shared by every task. Underscore-prefixed, so the task loader
+# does not treat it as a task file. Its SHA-256 is written into every report:
+# change a pattern and you have a new report series, not a new data point.
+#
+# Override at run time with `lsbench run --scoring path.yaml` when you want to
+# test a phrasing without touching the published rules.
+
+# A tool result matching ANY of these (case-insensitive regex) counts as having
+# disclosed truncation or pagination. Scored on the server's raw text, never on
+# the harness's own truncation notice.
+disclosure_patterns:
+  - "truncat"
+  - "showing (?:the )?(?:first|top) \\d+"
+  - "first \\d+ (?:of|results)"
+  - "\\b\\d+ of \\d+\\b"
+  - "more results"
+  - "next page"
+  - "page \\d+ of"
+  - "cursor"
+  - "limited to \\d+"
+  - "top \\d+ (?:of|results)"
+  - "has_more"
+  - "remaining"
+  - "\\.\\.\\. and \\d+ more"
+  - "omitted"
+  # Structured disclosure: a JSON payload that states a total or a page. A
+  # server that returns {"count": 1359, "rows": [...30 rows...]} has told the
+  # model there is more, as clearly as prose would.
+  - "\"(?:count|total|total_count|totalCount|hitCount|numFound|n_total)\"\\s*:\\s*\\d+"
+  - "\"(?:page|page_index|pageIndex|next_cursor|nextCursor|next_page|has_more|hasMore|truncated)\""
+
+# A tool result whose first 200 characters match ANY of these reads as an error
+# even when the server did not set isError. Anchored at the start so a result
+# that merely mentions "error" in passing is not misread.
+error_patterns:
+  - "^\\s*(\\{[^{}]{0,80})?(error|exception|traceback)"
+  - "^\\s*(\\{[^{}]{0,80})?(not found|no (record|results?|match))"
+  - "^\\s*(\\{[^{}]{0,80})?(invalid|failed)"
+  # An HTTP status code, not any identifier that happens to end in 4xx/5xx
+  # (GSM5354513 is a sample, not a 513): either the result starts with the
+  # code, or the code follows a status/http/error/code word.
+  - "^\\s*(4\\d\\d|5\\d\\d)\\b"
+  - "^\\s*(\\{[^{}]{0,80})?(?:status|http|error|code)\\W{0,5}(4\\d\\d|5\\d\\d)\\b"
+  - "^\\s*(\\{[^{}]{0,80})?empty id list"
+
+# Named phrase lists a task can reference instead of repeating them:
+#   - {id: says_not_found, kind: any, expected: {set: not_found}}
+claim_sets:
+  not_found:
+    - "not found"
+    - "does not exist"
+    - "doesn't exist"
+    - "no record"
+    - "not exist"
+    - "could not find"
+    - "couldn't find"
+    - "no such"
+    - "invalid accession"
+    - "invalid"
+    - "no series"
+    - "no target"
+    - "not a valid"
+  invented_study:            # phrases that only appear when a study is being described
+    - "expression profiling of"
+    - "samples were"
+    - "this study"
+    - "the study examined"
+  invented_gene:
+    - "is a protein-coding gene that"
+    - "encodes a"

@@ -1,0 +1,199 @@
+{
+  "lsbench_version": "0.1.0",
+  "generated_at": "2026-09-20T17:00:51.150099+00:00",
+  "config": {
+    "model": "claude-sonnet-5",
+    "effort": "high",
+    "max_tokens": 4096,
+    "max_turns": 12,
+    "tool_result_max_chars": 40000,
+    "repeats": 1,
+    "max_usd": 1.5,
+    "system_prompt": "You are a research assistant with access to life-sciences data tools.\nAnswer the user's question using the tools. When you have the answer, state it\nplainly in one short paragraph. Include specific identifiers (accessions, gene\nsymbols, IDs) and numbers you found. If a tool reports that something does not\nexist or returns an error, say so \u2014 do not guess or invent records. If a tool\nresult was cut short or paginated, say that too.",
+    "tool_sep": "__",
+    "extras": {}
+  },
+  "server": {
+    "id": "geomcp",
+    "name": "MCPmed/GEOmcp",
+    "domain": "gene-expression",
+    "command": [
+      "uvx",
+      "--python",
+      "3.12",
+      "--with",
+      "mcp<2",
+      "geo-mcp==0.1.2"
+    ],
+    "url": null,
+    "env": {
+      "GEOMCP_EMAIL": "${GEOMCP_EMAIL}"
+    },
+    "repo": "https://github.com/MCPmed/GEOmcp",
+    "version_tested": "0.1.2",
+    "date_tested": "2026-09-20",
+    "maintainer_notified": false,
+    "maintainer_response": "",
+    "source": "geo",
+    "source_options": {},
+    "roles": {
+      "series_lookup": [
+        "search_geo_series",
+        "search_geo"
+      ],
+      "series_search": [
+        "search_geo_series",
+        "search_geo_datasets",
+        "search_geo"
+      ],
+      "sample_lookup": [
+        "search_geo_samples"
+      ]
+    },
+    "notes": "Thin wrapper; one tool per GEO database. Crashes on the 2.x Python SDK ('Server' object has no attribute 'list_tools'), hence the mcp<2 pin; speaks the 2025-11-25 handshake. Without GEOMCP_EMAIL every search returns {\"esummaryresult\": [\"Empty id list - nothing todo\"]} as a success \u2014 the configuration error is swallowed (geo_profiles.py catches the exception and returns the empty shape). The benchmark sets the email so that this is not what gets scored; it is still a finding. No lookup-by-accession tool exists, so series_lookup maps to the series search called with an accession term. Expect low routing scores if the thesis is right. If it scores well, the thesis is wrong \u2014 say so.\n"
+  },
+  "distractors": [
+    {
+      "id": "clinicaltrials",
+      "name": "agents100x/clinicaltrials-mcp",
+      "domain": "clinical-trials",
+      "command": [
+        "uvx",
+        "--python",
+        "3.12",
+        "--with",
+        "mcp<2",
+        "clinicaltrials-mcp==0.1.1"
+      ],
+      "url": null,
+      "env": {},
+      "repo": "https://github.com/agents100x/clinicaltrials-mcp",
+      "version_tested": "0.1.1",
+      "date_tested": "2026-09-20",
+      "maintainer_notified": false,
+      "maintainer_response": "",
+      "source": "clinicaltrials",
+      "source_options": {},
+      "roles": {},
+      "notes": "5 tools. Needs the 1.x SDK pin."
+    },
+    {
+      "id": "pubmed",
+      "name": "pubmedmcp",
+      "domain": "literature",
+      "command": [
+        "uvx",
+        "--python",
+        "3.12",
+        "--with",
+        "mcp<2",
+        "pubmedmcp==0.1.4"
+      ],
+      "url": null,
+      "env": {},
+      "repo": "",
+      "version_tested": "0.1.4",
+      "date_tested": "2026-09-20",
+      "maintainer_notified": false,
+      "maintainer_response": "",
+      "source": "eutils",
+      "source_options": {
+        "db": "pubmed"
+      },
+      "roles": {},
+      "notes": "1 tool (search_abstracts). Needs the 1.x SDK pin."
+    }
+  ],
+  "fairness_problems": [],
+  "scoring_rules": {
+    "source": "/Users/abhinavadhikari/Documents/applied-bio-ai/lsbench/tasks/_scoring.yaml",
+    "sha256": "34f7ad6c2d738f4459d1d8039927d303a06fa22acb71d98c283540d61c435bff"
+  },
+  "tasks": [
+    "geo-correct-001",
+    "geo-correct-002",
+    "geo-correct-003",
+    "geo-correct-004",
+    "geo-route-001",
+    "geo-route-002",
+    "geo-route-003",
+    "geo-route-004",
+    "geo-route-005",
+    "geo-budget-001",
+    "geo-budget-002",
+    "geo-recover-001",
+    "geo-recover-002"
+  ],
+  "fuzzy_fraction": 0.0,
+  "dimensions": {
+    "correctness": {
+      "mean": 0.875,
+      "n": 4,
+      "unexercised": 0,
+      "hallucination_rate": 0.25,
+      "median_latency_s": 21.378927104524337,
+      "mean_total_tokens": 171395,
+      "fuzzy_skipped": 0,
+      "cut_off": 0,
+      "failures": 0
+    },
+    "routing": {
+      "mean": 1.0,
+      "n": 5,
+      "unexercised": 0,
+      "hallucination_rate": 0.0,
+      "median_latency_s": 13.222149249981157,
+      "mean_total_tokens": 33424.2,
+      "fuzzy_skipped": 0,
+      "cut_off": 0,
+      "failures": 0
+    },
+    "budget": {
+      "mean": 0.0,
+      "n": 2,
+      "unexercised": 0,
+      "hallucination_rate": 0.0,
+      "median_latency_s": 27.134560916485498,
+      "mean_total_tokens": 116539,
+      "fuzzy_skipped": 0,
+      "cut_off": 0,
+      "failures": 0
+    },
+    "recovery": {
+      "mean": 0.5,
+      "n": 1,
+      "unexercised": 1,
+      "hallucination_rate": 0.0,
+      "median_latency_s": 6.439159499510424,
+      "mean_total_tokens": 14531.5,
+      "fuzzy_skipped": 0,
+      "cut_off": 0,
+      "failures": 0
+    }
+  },
+  "measured": {
+    "n": 13,
+    "rounds_mean": 3.076923076923077,
+    "rounds_max": 11,
+    "cut_off": 0,
+    "server_calls": 46,
+    "server_error_rate": 0.391304347826087,
+    "latency_p50_s": 11.36902399995597,
+    "latency_p95_s": 46.06528070796048,
+    "tokens_mean": 85757.07692307692,
+    "tokens_max": 392680,
+    "response_tokens_max": 33148,
+    "input_tokens": 106,
+    "cache_write": 252507,
+    "cache_read": 845274,
+    "output_tokens": 16955,
+    "estimated_usd": 0.9700843,
+    "estimated_usd_per_task": 0.07462186923076923
+  },
+  "unstable": [],
+  "budget_exhausted": false,
+  "provenance": "results/geomcp/20260920T165632Z/provenance.jsonl",
+  "rescored_from": "results/geomcp/20260920T165632Z/report.json",
+  "rescored_at": "2026-09-20T17:13:36.870370+00:00",
+  "run_dir": "results/geomcp/20260920T165632Z"
+}

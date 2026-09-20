@@ -1,0 +1,146 @@
+# Target–disease (Open Targets Platform) tasks.
+#
+# Ground truth verified 2026-09-20 directly against the Open Targets GraphQL
+# API (api.platform.opentargets.org/api/v4/graphql), data release 26.06 — not
+# through any MCP server. Identifiers (Ensembl, MONDO/EFO, ChEMBL) are stable
+# across releases; association scores are not, so no task asserts a score.
+#
+# Two servers under test share this domain: the official server (5 tools,
+# schema-discovery-then-GraphQL) and a community server (68 tools, one per
+# endpoint). Same upstream data, opposite designs. That is the controlled
+# comparison the benchmark exists for.
+
+- id: ot-correct-001
+  dimension: correctness
+  prompt: "What is the Ensembl gene ID for BRCA1, and which chromosome is it on?"
+  claims:
+    - {id: ensembl, kind: exact, expected: "ENSG00000012048"}
+    - {id: chromosome, kind: numeric, expected: 17}
+  ground_truth:
+    verified: true
+    method: "OT GraphQL target(ensemblId) + search(queryString:\"BRCA1\", entityNames:[target])"
+    date: "2026-09-20"
+    release: "OT 26.06"
+    values: {id: "ENSG00000012048", approvedSymbol: "BRCA1", approvedName: "BRCA1 DNA repair associated", biotype: "protein_coding", chromosome: "17"}
+
+- id: ot-correct-002
+  dimension: correctness
+  prompt: "What is gefitinib's ChEMBL ID, what type of drug is it, and what is its mechanism of action target?"
+  claims:
+    - {id: chembl, kind: exact, expected: "CHEMBL939"}
+    - {id: small_molecule, kind: contains, expected: ["small molecule"]}
+    - {id: target, kind: exact, expected: "EGFR"}
+    - {id: action, kind: any, expected: ["inhibitor", "inhibits"]}
+  ground_truth:
+    verified: true
+    method: "OT GraphQL drug(chemblId:\"CHEMBL939\") mechanismsOfAction"
+    date: "2026-09-20"
+    release: "OT 26.06"
+    values: {id: "CHEMBL939", name: "GEFITINIB", drugType: "Small molecule", maximumClinicalStage: "APPROVAL", mechanismOfAction: "Epidermal growth factor receptor erbB1 inhibitor", actionType: "INHIBITOR", targets: ["EGFR"]}
+
+- id: ot-correct-003
+  dimension: correctness
+  prompt: "What is the Open Targets disease ID for Alzheimer disease, and which therapeutic areas is it filed under?"
+  claims:
+    - {id: mondo, kind: exact, expected: "MONDO_0004975"}
+    - {id: area_nervous, kind: contains, expected: ["nervous system"]}
+  ground_truth:
+    verified: true
+    method: "OT GraphQL search(queryString:\"Alzheimer disease\", entityNames:[disease]) + disease(efoId)"
+    date: "2026-09-20"
+    release: "OT 26.06"
+    values: {id: "MONDO_0004975", name: "Alzheimer disease", therapeuticAreas: ["psychiatric disorder", "nervous system disorder", "phenotype"]}
+
+- id: ot-correct-004
+  dimension: correctness
+  prompt: "Which disease is most strongly associated with BRCA1 in Open Targets?"
+  claims:
+    - {id: breast_cancer, kind: contains, expected: ["breast cancer"]}
+  notes: >
+    Top association by overall score. Scores move between releases; the top
+    hit (breast cancer, MONDO_0007254, 0.839 at 26.06) is asserted by name
+    only. Re-verify at each release before publishing.
+  ground_truth:
+    verified: true
+    method: "OT GraphQL target(ensemblId:\"ENSG00000012048\") associatedDiseases(page:{index:0,size:3})"
+    date: "2026-09-20"
+    release: "OT 26.06"
+    values: {top: [{disease: "breast cancer", id: "MONDO_0007254", score: 0.839}, {disease: "Hereditary breast and ovarian cancer syndrome", id: "Orphanet_145", score: 0.828}]}
+
+- id: ot-route-001
+  dimension: routing
+  prompt: "Give me the basic details of the gene EGFR."
+  expect_first_role: target_lookup
+  notes: >
+    A symbol, not an ID. The official server must resolve via search_entities
+    first; the community server has get_target_info but it takes an Ensembl ID,
+    so search/map first is also right there. Both mappings are in servers.yaml.
+  ground_truth: {verified: true, method: "scored on first tool call", date: "2026-09-20"}
+
+- id: ot-route-002
+  dimension: routing
+  prompt: "What drugs are in clinical development or approved for EGFR?"
+  expect_first_role: target_drugs
+  ground_truth: {verified: true, method: "scored on first tool call", date: "2026-09-20"}
+
+- id: ot-route-003
+  dimension: routing
+  prompt: "Find clinical trials currently recruiting for EGFR-mutant lung cancer."
+  expect_server: clinicaltrials
+  notes: "Distractor routing. Open Targets has trial-derived evidence but is not a registry."
+  ground_truth: {verified: true, method: "scored on first tool call", date: "2026-09-20"}
+
+- id: ot-route-004
+  dimension: routing
+  prompt: "Find recent review articles about EGFR inhibitor resistance mechanisms."
+  expect_server: pubmed
+  ground_truth: {verified: true, method: "scored on first tool call", date: "2026-09-20"}
+
+- id: ot-budget-001
+  dimension: budget
+  prompt: "Summarize what is known about the target EGFR: what it is, and its main disease associations."
+  max_response_tokens: 3000
+  expect_truncation_disclosed: false
+  notes: "EGFR has 6,459 disease associations at 26.06. A summary must not dump them."
+  ground_truth: {verified: true, method: "OT GraphQL target(ensemblId:\"ENSG00000146648\") associatedDiseases count = 6459", date: "2026-09-20", release: "OT 26.06"}
+
+- id: ot-budget-002
+  dimension: budget
+  prompt: "List all diseases associated with BRCA1."
+  max_response_tokens: 4000
+  expect_truncation_disclosed: true
+  notes: "1,359 associations at 26.06. Must page or cap, and say so in the tool result."
+  ground_truth:
+    verified: true
+    method: "OT GraphQL target(ensemblId:\"ENSG00000012048\") associatedDiseases count"
+    date: "2026-09-20"
+    release: "OT 26.06"
+    values: {count: 1359}
+
+- id: ot-recover-001
+  dimension: recovery
+  prompt: "Tell me about the target ENSG99999999999."
+  claims:
+    - {id: says_not_found, kind: any, expected: {set: not_found}}
+    - {id: no_invented_symbol, kind: absent, expected: {set: invented_gene}}
+  expect_error: true
+  notes: "Nonexistent Ensembl ID. Must report not-found, not invent a gene."
+  ground_truth: {verified: true, method: "OT GraphQL target(ensemblId:\"ENSG99999999999\") returns null", date: "2026-09-20", release: "OT 26.06"}
+
+- id: ot-recover-002
+  dimension: recovery
+  prompt: "Which drugs are known to act on the target EGFR? Use the knownDrugs data."
+  claims:
+    - {id: names_a_drug, kind: any, expected: ["gefitinib", "erlotinib", "osimertinib", "afatinib", "cetuximab"]}
+  expect_error: true
+  notes: >
+    Release 26.06 renamed Target.knownDrugs to drugAndClinicalCandidates. A
+    server with a hardcoded knownDrugs query, or a model that writes one,
+    gets a GraphQL error. Recovery means reading the error, finding the
+    current field, and answering. If no error occurs (the server already
+    tracks the schema) the task is unexercised — also worth knowing.
+  ground_truth:
+    verified: true
+    method: "OT GraphQL: knownDrugs -> 'Cannot query field'; drugAndClinicalCandidates exists on Target at 26.06; gefitinib CHEMBL939 targets EGFR"
+    date: "2026-09-20"
+    release: "OT 26.06"

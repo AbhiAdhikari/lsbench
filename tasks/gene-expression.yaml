@@ -1,0 +1,175 @@
+# Gene-expression (GEO) tasks.
+#
+# Ground truth verified 2026-09-20 directly against NCBI, not through any MCP
+# server: E-utilities esummary (db=gds) and the GEO SOFT text for each record
+# (acc.cgi?acc=...&targ=self&form=text&view=brief). Values are recorded under
+# ground_truth.values so a reviewer can re-check them without re-deriving.
+#
+# Claim kinds: exact | numeric | contains | absent | fuzzy. Fuzzy claims are
+# not scored (no judge is wired in); their fraction is reported.
+#
+# Roles for routing tasks are mapped per server in servers.yaml.
+
+- id: geo-correct-001
+  dimension: correctness
+  prompt: "What organism and assay type is GSE176078, and how many samples does it have?"
+  claims:
+    - {id: organism, kind: exact, expected: "Homo sapiens"}
+    - {id: n_samples, kind: numeric, expected: 26}
+    - {id: assay, kind: contains, expected: ["sequencing"]}
+  ground_truth:
+    verified: true
+    method: "NCBI esummary db=gds uid 200176078; GEO SOFT GSE176078"
+    date: "2026-09-20"
+    release: "GEO gds Build260919-1942.1"
+    values:
+      title: "A single-cell and spatially resolved atlas of human breast cancers"
+      taxon: "Homo sapiens"
+      gdstype: "Expression profiling by high throughput sequencing"
+      n_samples: 26
+      gpl: "GPL18573"
+      pubmed: ["34493872"]
+      pdat: "2021/06/24"
+
+- id: geo-correct-002
+  dimension: correctness
+  prompt: "Which platform (GPL accession) was used for GSE120575, and which PubMed ID is it linked to?"
+  claims:
+    - {id: platform, kind: exact, expected: "GPL18573"}
+    - {id: pubmed, kind: exact, expected: "30388456"}
+  ground_truth:
+    verified: true
+    method: "NCBI esummary db=gds uid 200120575"
+    date: "2026-09-20"
+    release: "GEO gds Build260919-1942.1"
+    values: {gpl: "GPL18573", pubmed: ["30388456"], n_samples: 48, taxon: "Homo sapiens"}
+
+- id: geo-correct-003
+  dimension: correctness
+  prompt: "Is GSE239940 a SuperSeries? If so, list its SubSeries accessions and how many samples each has."
+  claims:
+    - {id: is_superseries, kind: exact, expected: "superseries"}
+    - {id: sub_a, kind: exact, expected: "GSE239938"}
+    - {id: sub_b, kind: exact, expected: "GSE239939"}
+    - {id: n_sub_b, kind: numeric, expected: 21}
+  notes: >
+    SuperSeries vs SubSeries is a known trap — "how many samples" has two right
+    answers (24 total; 3 + 21 by SubSeries). Servers that pass raw metadata
+    through tend to pick one silently.
+  ground_truth:
+    verified: true
+    method: "GEO SOFT GSE239940 (!Series_relation), GSE239938, GSE239939"
+    date: "2026-09-20"
+    release: "GEO gds Build260919-1942.1"
+    values:
+      relations: ["SuperSeries of: GSE239938", "SuperSeries of: GSE239939"]
+      n_samples_total: 24
+      GSE239938: {n_samples: 3, type: "Genome binding/occupancy profiling by high throughput sequencing"}
+      GSE239939: {n_samples: 21, type: "Expression profiling by high throughput sequencing"}
+
+- id: geo-correct-004
+  dimension: correctness
+  prompt: "What clinical subtype and tissue are recorded for GEO sample GSM5354513?"
+  claims:
+    - {id: subtype, kind: contains, expected: ["HER2+", "ER+"]}
+    - {id: tissue, kind: contains, expected: ["breast"]}
+  ground_truth:
+    verified: true
+    method: "GEO SOFT GSM5354513 (!Sample_characteristics_ch1)"
+    date: "2026-09-20"
+    release: "GEO gds Build260919-1942.1"
+    values:
+      title: "CID3586"
+      characteristics: ["clinical_subtype: HER2+/ER+", "gender: female", "tissue: Primary Breast Tumor"]
+      series: "GSE176078"
+
+- id: geo-route-001
+  dimension: routing
+  prompt: "Tell me about GSE176078."
+  expect_first_role: series_lookup
+  notes: "Accession present. A free-text search or a sample-level tool first is a routing failure."
+  ground_truth: {verified: true, method: "no ground truth needed; scored on first tool call", date: "2026-09-20"}
+
+- id: geo-route-002
+  dimension: routing
+  prompt: "I need single-cell RNA-seq datasets of human pancreatic organoids."
+  expect_first_role: series_search
+  notes: "Description, no accession. A lookup-by-accession tool first is a failure."
+  ground_truth: {verified: true, method: "scored on first tool call", date: "2026-09-20"}
+
+- id: geo-route-003
+  dimension: routing
+  prompt: "What condition was sample GSM5354513 in?"
+  expect_first_role: sample_lookup
+  notes: "GSM not GSE. Tests whether descriptions disambiguate record types."
+  ground_truth: {verified: true, method: "scored on first tool call", date: "2026-09-20"}
+
+- id: geo-route-004
+  dimension: routing
+  prompt: "Find recruiting clinical trials for pancreatic cancer immunotherapy."
+  expect_server: clinicaltrials
+  notes: >
+    Distractor routing. The gene-expression server under test should NOT be
+    called first. Tests whether its tool descriptions overclaim scope.
+  ground_truth: {verified: true, method: "scored on first tool call", date: "2026-09-20"}
+
+- id: geo-route-005
+  dimension: routing
+  prompt: "Find recent papers on CRISPR base editing in primary T cells."
+  expect_server: pubmed
+  notes: "Distractor routing toward literature."
+  ground_truth: {verified: true, method: "scored on first tool call", date: "2026-09-20"}
+
+- id: geo-budget-001
+  dimension: budget
+  prompt: "Summarize GSE115978 in a few sentences: what it studied, organism, and roughly how many samples."
+  max_response_tokens: 1500
+  expect_truncation_disclosed: false
+  notes: "7,186-sample series. A summary must be fixed-size regardless of sample count."
+  ground_truth:
+    verified: true
+    method: "NCBI esummary db=gds uid 200115978"
+    date: "2026-09-20"
+    values: {n_samples: 7186, taxon: "Homo sapiens", title: "Single-cell RNA-seq of melanoma ecosystems reveals sources of T cells exclusion linked to immunotherapy clinical outcomes"}
+
+- id: geo-budget-002
+  dimension: budget
+  prompt: "List the sample accessions in GSE115978."
+  max_response_tokens: 4000
+  expect_truncation_disclosed: true
+  notes: >
+    7,186 samples cannot fit. The server must truncate or paginate AND say so
+    in the tool result. Silent truncation fails even if the answer is right.
+  ground_truth:
+    verified: true
+    method: "NCBI esummary db=gds uid 200115978"
+    date: "2026-09-20"
+    values: {n_samples: 7186}
+
+- id: geo-recover-001
+  dimension: recovery
+  prompt: "Tell me about GSE999999999."
+  claims:
+    - {id: says_not_found, kind: any, expected: {set: not_found}}
+    - {id: no_invented_title, kind: absent, expected: {set: invented_study}}
+  expect_error: true
+  notes: >
+    Must report not-found, not invent a study. If the server returns a clean
+    success for a nonexistent accession, the task is unexercised and counted as
+    a silent failure — that is a server finding, not a model one.
+  ground_truth: {verified: true, method: "GSE999999999 does not exist (esearch returns 0 ids)", date: "2026-09-20"}
+
+- id: geo-recover-002
+  dimension: recovery
+  prompt: "Find GEO series on pancreatic organoid single-cell RNA-seq published in 2031."
+  claims:
+    - {id: acknowledges_year, kind: contains, expected: ["2031"]}
+  expect_error: true
+  expect_retry_without: "2031"
+  notes: >
+    Nothing is published in 2031. Tests whether an empty-search error steers a
+    retry with the impossible constraint dropped (scored from the transcript:
+    a later call to the server under test whose arguments omit "2031"), and
+    whether the answer acknowledges the constraint rather than presenting
+    older results as if they were from 2031.
+  ground_truth: {verified: true, method: "date is in the future by construction", date: "2026-09-20"}
