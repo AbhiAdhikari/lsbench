@@ -31,4 +31,4 @@ AttributeError: 'Server' object has no attribute 'list_tools'
 
 ## Context
 
-Found while running [lsbench](…), a benchmark for life-sciences MCP servers with the model held fixed. Version tested: 0.1.2, 2026-09-20. Routing was 15/15 in that run — the tool descriptions do their job; the items above are about what comes back.
+Found while running lsbench, a benchmark for life-sciences MCP servers with the model held fixed (public repo coming; I'll link it here, and can share the transcripts now on request). Version tested: 0.1.2, 2026-09-20. Routing was 15/15 in that run — the tool descriptions do their job; the items above are about what comes back.

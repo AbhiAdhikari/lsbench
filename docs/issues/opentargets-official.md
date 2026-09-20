@@ -13,4 +13,4 @@ Not bugs — two observations from running the server under a benchmark, in case
 
 ## Context
 
-Version tested: 2026.7.1 (742f7ef), 2026-09-20, data release 26.06. Part of [lsbench](…), a benchmark for life-sciences MCP servers with the model held fixed; this server is its positive control and it scored as one. Transcripts available.
+Version tested: 2026.7.1 (742f7ef), 2026-09-20, data release 26.06. Part of lsbench, a benchmark for life-sciences MCP servers with the model held fixed (public repo coming; I'll link it here); this server is its positive control and it scored as one. Transcripts available.

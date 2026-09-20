@@ -50,4 +50,4 @@ uvx --python 3.12 opentargets-mcp==0.5.0
 
 ## Context
 
-Found while running [lsbench](…), a benchmark for life-sciences MCP servers with the model held fixed. Version tested: 0.5.0. Full transcripts are in the published run; happy to share anything else. The server otherwise did well — 12/12 on routing and correctness in the same run.
+Found while running lsbench, a benchmark for life-sciences MCP servers with the model held fixed (public repo coming; I'll link it here, and can share the transcripts now on request). Version tested: 0.5.0. Full transcripts are in the published run; happy to share anything else. The server otherwise did well — 12/12 on routing and correctness in the same run.
