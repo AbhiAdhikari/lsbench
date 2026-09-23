@@ -9,7 +9,11 @@ varies.
 > [`published/`](published/). Maintainers were notified before publication
 > ([nickzren/opentargets-mcp#4](https://github.com/nickzren/opentargets-mcp/issues/4),
 > [MCPmed/GEOmcp#4](https://github.com/MCPmed/GEOmcp/issues/4),
-> [opentargets/platform-mcp#53](https://github.com/opentargets/platform-mcp/issues/53)). The headline: **routing saturated on every
+> [opentargets/platform-mcp#53](https://github.com/opentargets/platform-mcp/issues/53)).
+> nickzren/opentargets-mcp responded the next day with
+> [0.6.0](https://pypi.org/project/opentargets-mcp/0.6.0/), fixing the broken
+> queries and returning upstream error text in-band; the 0.5.0 scores stand as
+> measured and 0.6.0 has not been re-run yet. The headline: **routing saturated on every
 > server** — the original thesis is not supported at this tier — and the
 > servers separate on error handling and response size instead.
 
@@ -114,6 +118,10 @@ Series 2026-09-20, Claude Sonnet 5, strict scores (unstable task → 0):
 | correctness | 100% n=12 | 100% n=12 | 86% n=11 |
 | tool calls that errored | 11% | 48% | 16% |
 | tokens/task | 117k | 287k | 42k |
+
+otp-community was scored at `0.5.0`. Its recovery and error-rate numbers come
+from two tools broken by an upstream field rename, fixed in `0.6.0` (not yet
+re-scored).
 
 Read [docs/results-2026-09-20.md](docs/results-2026-09-20.md) before quoting
 any of these: the interesting content is in the transcripts, not the table.
