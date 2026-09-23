@@ -75,7 +75,16 @@ servers:
     version_tested: "0.5.0"
     date_tested: "2026-09-20"
     maintainer_notified: true
-    maintainer_response: "filed 2026-09-20: https://github.com/nickzren/opentargets-mcp/issues/4 — no response yet"
+    maintainer_response: >
+      filed 2026-09-20: https://github.com/nickzren/opentargets-mcp/issues/4.
+      Maintainer replied 2026-09-21 and released 0.6.0 (PyPI 2026-09-21): the
+      two query fixes had been on main since 2026-05-04 but unreleased — 0.5.0
+      was a stale artifact. Upstream errors[].message now reaches the client
+      via ToolError with isError (the actually-open item); HTTP 400 and
+      200+errors paths fixed. Refinement to the diagnosis: search_entities
+      failed on two Drug fields in an inline fragment, not a search-type field.
+      Startup introspection declined (26.06 reshaped types, not just names).
+      Scores below are for 0.5.0 as published; 0.6.0 not yet re-run.
     source: opentargets
     roles:
       target_lookup: [search_entities, map_ids, get_target_info]

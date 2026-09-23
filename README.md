@@ -7,7 +7,9 @@ varies.
 > on Claude Sonnet 5, 2026-09-20, $11 including one superseded run. Results and the full argument are in
 > [docs/results-2026-09-20.md](docs/results-2026-09-20.md); artifacts in
 > [`published/`](published/). Maintainers were notified before publication
-> ([issues](docs/issues/README.md)). The headline: **routing saturated on every
+> ([nickzren/opentargets-mcp#4](https://github.com/nickzren/opentargets-mcp/issues/4),
+> [MCPmed/GEOmcp#4](https://github.com/MCPmed/GEOmcp/issues/4),
+> [opentargets/platform-mcp#53](https://github.com/opentargets/platform-mcp/issues/53)). The headline: **routing saturated on every
 > server** — the original thesis is not supported at this tier — and the
 > servers separate on error handling and response size instead.
 
@@ -124,7 +126,9 @@ Findings from setup (all from `lsbench tools` / `validate`):
   benchmark sets the email; the swallowed error is still a finding.
 - `opentargets-mcp 0.5.0` exposes `get_target_known_drugs`, named for a field
   Open Targets removed in release 26.06 (`knownDrugs` → `drugAndClinicalCandidates`).
-  Whether it still works is what `ot-recover-002` measures.
+  Whether it still works is what `ot-recover-002` measures. **Fixed in 0.6.0
+  (2026-09-21)** in response to [#4](https://github.com/nickzren/opentargets-mcp/issues/4):
+  queries updated and upstream error text now returned in-band. Not yet re-scored.
 
 ## What the benchmark is
 
